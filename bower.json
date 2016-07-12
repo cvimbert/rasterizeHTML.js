@@ -1,0 +1,21 @@
+{
+  "name": "rasterizehtml",
+  "description": "Renders HTML into the browser's canvas.",
+  "main": "",
+  "authors": [
+    "[object Object]"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "canvas",
+    "HTML"
+  ],
+  "homepage": "https://github.com/cvimbert/rasterizeHTML.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
