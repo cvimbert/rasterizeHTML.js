@@ -559,8 +559,21 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
             element.style.left = (-10000 - width) + "px";
             // We need to add the element to the document so that its content gets loaded
             doc.getElementsByTagName("body")[0].appendChild(element);
+
+            var st = doc.createElement("style");
+            st.rel = "stylesheet";
+            st.href = "css/styles.css";
+
+            doc.appendChild(st);
+
             return element;
         } else {
+            var st = doc.createElement("style");
+            st.rel = "stylesheet";
+            st.href = "css/styles.css";
+
+            doc.appendChild(st);
+
             return doc.getElementsByTagName(tagName)[0];
         }
     };
