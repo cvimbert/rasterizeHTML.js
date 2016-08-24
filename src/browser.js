@@ -4,35 +4,17 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
     var module = {};
 
     var createHiddenElement = function (doc, tagName, width, height) {
-
-        if (doc.getElementsByTagName(tagName).length === 0) {
-            var element = doc.createElement(tagName);
-            // 'display: none' doesn't cut it, as browsers seem to be lazy loading CSS
-            element.style.visibility = "hidden";
-            element.style.width = width + "px";
-            element.style.height = height + "px";
-            element.style.position = "absolute";
-            element.style.top = (-10000 - height) + "px";
-            element.style.left = (-10000 - width) + "px";
-            // We need to add the element to the document so that its content gets loaded
-            doc.getElementsByTagName("body")[0].appendChild(element);
-
-            var st = doc.createElement("style");
-            st.rel = "stylesheet";
-            st.href = "css/styles.css";
-
-            doc.appendChild(st);
-
-            return element;
-        } else {
-            var st = doc.createElement("style");
-            st.rel = "stylesheet";
-            st.href = "css/styles.css";
-
-            doc.appendChild(st);
-
-            return doc.getElementsByTagName(tagName)[0];
-        }
+        var element = doc.createElement(tagName);
+        // 'display: none' doesn't cut it, as browsers seem to be lazy loading CSS
+        element.style.visibility = "hidden";
+        element.style.width = width + "px";
+        element.style.height = height + "px";
+        element.style.position = "absolute";
+        element.style.top = (-10000 - height) + "px";
+        element.style.left = (-10000 - width) + "px";
+        // We need to add the element to the document so that its content gets loaded
+        doc.getElementsByTagName("body")[0].appendChild(element);
+        return element;
     };
 
     module.executeJavascript = function (element, options) {
@@ -43,12 +25,12 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
             timeout = options.executeJsTimeout || 0;
 
         var doResolve = function () {
-            /*var doc = iframe.contentDocument;
+            var doc = iframe.contentDocument;
             theWindow.document.getElementsByTagName("body")[0].removeChild(iframe);
             defer.resolve({
                 document: doc,
                 errors: iframeErrorsMessages
-            });*/
+            });
         };
 
         var waitForJavaScriptToRun = function () {
