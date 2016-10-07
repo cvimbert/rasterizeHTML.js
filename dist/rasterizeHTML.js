@@ -1,4 +1,4 @@
-/*! rasterizeHTML.js - v1.2.2 - 2016-08-24
+/*! rasterizeHTML.js - v1.2.2 - 2016-10-07
 * http://www.github.com/cburgmer/rasterizeHTML.js
 * Copyright (c) 2016 Christoph Burgmer; Licensed MIT */
 (function (root, factory) {
@@ -569,7 +569,7 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
 
         var doResolve = function () {
             var doc = iframe.contentDocument;
-            theWindow.document.getElementsByTagName("body")[0].removeChild(iframe);
+            //theWindow.document.getElementsByTagName("body")[0].removeChild(iframe);
             defer.resolve({
                 document: doc,
                 errors: iframeErrorsMessages
@@ -612,19 +612,26 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
         return defer.promise;
     };
 
+    var iframe;
+    var created = false;
+
     var createHiddenSandboxedIFrame = function (doc, width, height) {
-        var iframe = doc.createElement('iframe');
-        iframe.style.width = width + "px";
-        iframe.style.height = height + "px";
-        // 'display: none' doesn't cut it, as browsers seem to be lazy loading content
-        iframe.style.visibility = "hidden";
-        iframe.style.position = "absolute";
-        iframe.style.top = (-10000 - height) + "px";
-        iframe.style.left = (-10000 - width) + "px";
-        // Don't execute JS, all we need from sandboxing is access to the iframe's document
-        iframe.sandbox = 'allow-same-origin';
-        // Don't include a scrollbar on Linux
-        iframe.scrolling = 'no';
+
+        if (!iframe) {
+            iframe = doc.createElement('iframe');
+            iframe.style.width = width + "px";
+            iframe.style.height = height + "px";
+            // 'display: none' doesn't cut it, as browsers seem to be lazy loading content
+            iframe.style.visibility = "hidden";
+            iframe.style.position = "absolute";
+            iframe.style.top = (-10000 - height) + "px";
+            iframe.style.left = (-10000 - width) + "px";
+            // Don't execute JS, all we need from sandboxing is access to the iframe's document
+            iframe.sandbox = 'allow-same-origin';
+            // Don't include a scrollbar on Linux
+            iframe.scrolling = 'no';
+        }
+
         return iframe;
     };
 
@@ -737,15 +744,25 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
             } catch (e) {
                 defer.reject(e);
             } finally {
-                theWindow.document.getElementsByTagName("body")[0].removeChild(iframe);
+                //theWindow.document.getElementsByTagName("body")[0].removeChild(iframe);
             }
         };
 
         // srcdoc doesn't work in PhantomJS yet
-        iframe.contentDocument.open();
-        iframe.contentDocument.write('<!DOCTYPE html>');
-        iframe.contentDocument.write(elementToFullHtmlDocument(element));
-        iframe.contentDocument.close();
+
+        if (!created) {
+            iframe.contentDocument.open();
+            iframe.contentDocument.write('<!DOCTYPE html>');
+            iframe.contentDocument.write(elementToFullHtmlDocument(element));
+            iframe.contentDocument.close();
+            created = true;
+        } else {
+            iframe.contentDocument.open();
+            iframe.contentDocument.write(elementToFullHtmlDocument(element));
+            //iframe.contentDocument.querySelector("#rasterize-content").innerHTML = elementToFullHtmlDocument(element);
+            iframe.contentDocument.close();
+        }
+
 
         return defer.promise;
     };
@@ -786,7 +803,7 @@ var browser = (function (util, proxies, ayepromise, sanedomparsererror, theWindo
     module.parseHTML = function (html) {
         // We should be using the DOMParser, but it is not supported in older browsers
         var doc = theWindow.document.implementation.createHTMLDocument('');
-        doc.documentElement.innerHTML = html;
+        doc.documentElement.innerHTML = "<link rel='stylesheet' href='css/styles.css' /></div><div class='rasterize-content'>" + html + "</div>";
 
         addHTMLTagAttributes(doc, html);
         return doc;
